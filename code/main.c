@@ -1,4 +1,5 @@
 #include "allocator.h"
+#include "counting_sort.h"
 #include "heap_sort.h"
 #include "insertion_sort.h"
 #include "max_heap.h"
@@ -112,6 +113,22 @@ int main(void) {
       printf("%d ", array[i].key);
     }
     printf("\n");
+    printf("\n");
+  }
+
+  {
+    printf("Counting sort\n");
+    arr_el_t array[] = {{5, NULL}, {2, NULL}, {4, NULL},
+                        {6, NULL}, {1, NULL}, {3, NULL}};
+    size_t n = sizeof(array) / sizeof(array[0]);
+
+    arr_el_t *out = allocator.alloc(n * sizeof(arr_el_t), allocator.state);
+    counting_sort(array, n, 6, out, allocator);
+    for (size_t i = 0; i < n; i++) {
+      printf("%d ", out[i].key);
+    }
+    printf("\n");
+    allocator.dealloc(out, allocator.state);
     printf("\n");
   }
 
