@@ -1,0 +1,2 @@
+main: main.c insertion_sort.h insertion_sort.c merge_sort.h merge_sort.c allocator.h stdlib_allocator.c
+	clang -Wall -Wextra -o main main.c insertion_sort.c merge_sort.c stdlib_allocator.c
