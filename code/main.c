@@ -1,5 +1,6 @@
 #include "allocator.h"
 #include "insertion_sort.h"
+#include "max_heap.h"
 #include "merge_sort.h"
 #include <stdio.h>
 
@@ -16,7 +17,7 @@ void print_array(int *array, size_t n) {
   printf("\n");
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   {
     int array[] = {5, 2, 4, 6, 1, 3};
     size_t n = sizeof(array) / sizeof(array[0]);
@@ -30,6 +31,58 @@ int main(int argc, char *argv[]) {
     size_t n = sizeof(array) / sizeof(array[0]);
     merge_sort(array, n, sizeof(array[0]), cmp_int, allocator);
     print_array(array, n);
+  }
+
+  {
+    max_heap_t max_heap;
+    max_heap_init(&max_heap, 100, allocator);
+
+    max_heap_el_t el = {.key = 7, .data = NULL};
+    max_heap_insert(&max_heap, el);
+    max_heap_el_t max = max_heap_get_max(&max_heap);
+    printf("added %d, max: %d\n", el.key, max.key);
+    max_heap_print(&max_heap);
+
+    max_heap_el_t el2 = {.key = 9, .data = NULL};
+    max_heap_insert(&max_heap, el2);
+    max = max_heap_get_max(&max_heap);
+    printf("added %d, max: %d\n", el2.key, max.key);
+    max_heap_print(&max_heap);
+
+    max_heap_el_t el3 = {.key = 2, .data = NULL};
+    max_heap_insert(&max_heap, el3);
+    max = max_heap_get_max(&max_heap);
+    printf("added %d, max: %d\n", el3.key, max.key);
+    max_heap_print(&max_heap);
+
+    max = max_heap_extract_max(&max_heap);
+    printf("extracted max: %d\n", max.key);
+    max_heap_print(&max_heap);
+
+    max = max_heap_extract_max(&max_heap);
+    printf("extracted max: %d\n", max.key);
+    max_heap_print(&max_heap);
+
+    max_heap_fini(&max_heap);
+  }
+
+  {
+    max_heap_t max_heap;
+
+    max_heap_el_t *els =
+        allocator.alloc(5 * sizeof(max_heap_el_t), allocator.state);
+    els[0].key = 5;
+    els[1].key = 2;
+    els[2].key = 4;
+    els[3].key = 6;
+    els[4].key = 1;
+
+    max_heap_init(&max_heap, 5, allocator);
+    max_heap_build(&max_heap, els, 5);
+    max_heap_print(&max_heap);
+
+    max_heap_fini(&max_heap);
+    allocator.dealloc(els, allocator.state);
   }
 
   return 0;
