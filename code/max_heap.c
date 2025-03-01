@@ -8,14 +8,13 @@ static inline size_t left(size_t i) { return 2 * i + 1; }
 static inline size_t right(size_t i) { return 2 * i + 2; }
 
 void max_heap_init(max_heap_t *heap, size_t capacity, allocator_t allocator) {
-  heap->items =
-      allocator.alloc(capacity * sizeof(max_heap_el_t), allocator.state);
+  heap->items = allocator.alloc(capacity * sizeof(arr_el_t), allocator.state);
   heap->n_items = 0;
   heap->capacity = capacity;
   heap->allocator = allocator;
 }
 
-int max_heap_build(max_heap_t *heap, max_heap_el_t *els, size_t n) {
+int max_heap_build(max_heap_t *heap, arr_el_t *els, size_t n) {
   assert(heap != NULL);
   assert(heap->n_items == 0);
   assert(els != NULL);
@@ -34,18 +33,18 @@ int max_heap_build(max_heap_t *heap, max_heap_el_t *els, size_t n) {
   return 0;
 }
 
-max_heap_el_t max_heap_get_max(max_heap_t *heap) {
+arr_el_t max_heap_get_max(max_heap_t *heap) {
   assert(heap != NULL);
   assert(heap->n_items > 0);
   return heap->items[0];
 }
 
-max_heap_el_t max_heap_extract_max(max_heap_t *heap) {
+arr_el_t max_heap_extract_max(max_heap_t *heap) {
   assert(heap != NULL);
   assert(heap->n_items > 0);
 
   // Swap the first element with the last element.
-  max_heap_el_t tmp = heap->items[0];
+  arr_el_t tmp = heap->items[0];
   heap->items[0] = heap->items[heap->n_items - 1];
   heap->items[heap->n_items - 1] = tmp;
 
@@ -63,7 +62,7 @@ void max_heap_increase_priority(max_heap_t *heap, size_t i, int inc) {
   heap->items[i].key += inc;
 
   while (i > 0 && heap->items[i].key > heap->items[parent(i)].key) {
-    max_heap_el_t tmp = heap->items[i];
+    arr_el_t tmp = heap->items[i];
     heap->items[i] = heap->items[parent(i)];
     heap->items[parent(i)] = tmp;
 
@@ -97,7 +96,7 @@ void max_heap_heapify(max_heap_t *heap, size_t i) {
 
   if (m != i) {
     // Swap the two elements.
-    max_heap_el_t tmp = heap->items[i];
+    arr_el_t tmp = heap->items[i];
     heap->items[i] = heap->items[m];
     heap->items[m] = tmp;
 
@@ -105,7 +104,7 @@ void max_heap_heapify(max_heap_t *heap, size_t i) {
   }
 }
 
-int max_heap_insert(max_heap_t *heap, max_heap_el_t el) {
+int max_heap_insert(max_heap_t *heap, arr_el_t el) {
   assert(heap != NULL);
   if (heap->n_items >= heap->capacity) {
     return 1;
@@ -119,7 +118,7 @@ int max_heap_insert(max_heap_t *heap, max_heap_el_t el) {
   size_t i = heap->n_items - 1;
   while (i > 0 && heap->items[i].key > heap->items[parent(i)].key) {
     // Swap the two elements.
-    max_heap_el_t tmp = heap->items[i];
+    arr_el_t tmp = heap->items[i];
     heap->items[i] = heap->items[parent(i)];
     heap->items[parent(i)] = tmp;
 

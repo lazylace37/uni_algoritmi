@@ -45,19 +45,19 @@ int main(void) {
     max_heap_t max_heap;
     max_heap_init(&max_heap, 100, allocator);
 
-    max_heap_el_t el = {.key = 7, .data = NULL};
+    arr_el_t el = {.key = 7, .data = NULL};
     max_heap_insert(&max_heap, el);
-    max_heap_el_t max = max_heap_get_max(&max_heap);
+    arr_el_t max = max_heap_get_max(&max_heap);
     printf("added %d, max: %d\n", el.key, max.key);
     max_heap_print(&max_heap);
 
-    max_heap_el_t el2 = {.key = 9, .data = NULL};
+    arr_el_t el2 = {.key = 9, .data = NULL};
     max_heap_insert(&max_heap, el2);
     max = max_heap_get_max(&max_heap);
     printf("added %d, max: %d\n", el2.key, max.key);
     max_heap_print(&max_heap);
 
-    max_heap_el_t el3 = {.key = 2, .data = NULL};
+    arr_el_t el3 = {.key = 2, .data = NULL};
     max_heap_insert(&max_heap, el3);
     max = max_heap_get_max(&max_heap);
     printf("added %d, max: %d\n", el3.key, max.key);
@@ -78,8 +78,7 @@ int main(void) {
   {
     max_heap_t max_heap;
 
-    max_heap_el_t *els =
-        allocator.alloc(5 * sizeof(max_heap_el_t), allocator.state);
+    arr_el_t *els = allocator.alloc(5 * sizeof(arr_el_t), allocator.state);
     els[0].key = 5;
     els[1].key = 2;
     els[2].key = 4;
@@ -105,8 +104,8 @@ int main(void) {
 
   {
     printf("Heap sort\n");
-    max_heap_el_t array[] = {{5, NULL}, {2, NULL}, {4, NULL},
-                             {6, NULL}, {1, NULL}, {3, NULL}};
+    arr_el_t array[] = {{5, NULL}, {2, NULL}, {4, NULL},
+                        {6, NULL}, {1, NULL}, {3, NULL}};
     size_t n = sizeof(array) / sizeof(array[0]);
     heap_sort(array, n, allocator);
     for (size_t i = 0; i < n; i++) {
