@@ -15,11 +15,29 @@ int cmp_int(const void *a, const void *b) {
   return (x > y) - (x < y);
 }
 
+double elapsed_seconds(struct timespec start, struct timespec end) {
+  return (end.tv_sec - start.tv_sec) +
+         ((end.tv_nsec - start.tv_nsec) / (double)1e9);
+}
+double clock_resolution() {
+  struct timespec start, end;
+  clock_gettime(CLOCK_MONOTONIC, &start);
+  do {
+    clock_gettime(CLOCK_MONOTONIC, &end);
+  } while (elapsed_seconds(start, end) == 0.0);
+  return elapsed_seconds(start, end);
+}
+
 int main(int argc, char *argv[]) {
   if (argc < 4) {
     printf("Usage: %s <length> <max_value> <n_runs>\n", argv[0]);
     return 1;
   }
+
+  // Calcola il tempo minimo misurabile
+  double clock_res = clock_resolution();
+  double max_relative_error = 0.001;
+  double min_time = clock_res * (1 / max_relative_error + 1);
 
   int n = atoi(argv[1]);
   int m = atoi(argv[2]);
@@ -35,79 +53,127 @@ int main(int argc, char *argv[]) {
   double *quick_sort_times =
       std_allocator.alloc(n_runs * sizeof(double), std_allocator.state);
 
+  // Generate a random array of n integers between 0 and m
+  int *array = std_allocator.alloc(n * sizeof(int), std_allocator.state);
+  for (int i = 0; i < n; i++) {
+    array[i] = rand() % m;
+  }
+
+  // Run n_runs times on the same array
   for (int r = 0; r < n_runs; r++) {
-    // Generate a random array of n integers between 0 and m
-    int *array = std_allocator.alloc(n * sizeof(int), std_allocator.state);
-    for (int i = 0; i < n; i++) {
-      array[i] = rand() % m;
-    }
-
-    struct timespec start, end;
     {
-      /*int *array_copy =*/
-      /*    std_allocator.alloc(n * sizeof(int), std_allocator.state);*/
-      /*for (int i = 0; i < n; i++)*/
-      /*  array_copy[i] = array[i];*/
-      /**/
-      /*clock_gettime(CLOCK_MONOTONIC, &start);*/
-      /*insertion_sort(array_copy, n, sizeof(int), cmp_int);*/
-      /*clock_gettime(CLOCK_MONOTONIC, &end);*/
-      /*double elapsed =*/
-      /*    (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;*/
-      /*insertion_sort_times[r] = elapsed;*/
-      /**/
-      /*std_allocator.dealloc(array_copy, std_allocator.state);*/
-    }
-    {
-      int *array_copy =
-          std_allocator.alloc(n * sizeof(int), std_allocator.state);
-      for (int i = 0; i < n; i++)
-        array_copy[i] = array[i];
+      allocator_t buffer_allocator = buffer_allocator_init(n * sizeof(int));
 
+      int count = 0;
+      struct timespec start, end;
       clock_gettime(CLOCK_MONOTONIC, &start);
-      merge_sort(array_copy, n, sizeof(int), cmp_int, std_allocator);
-      clock_gettime(CLOCK_MONOTONIC, &end);
-      double elapsed =
-          (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-      merge_sort_times[r] = elapsed;
+      while (1) {
+        int *array_copy =
+            buffer_allocator.alloc(n * sizeof(int), buffer_allocator.state);
+        memcpy(array_copy, array, n * sizeof(int));
 
-      std_allocator.dealloc(array_copy, std_allocator.state);
-    }
-    {
-      max_heap_el_t *heap_array =
-          std_allocator.alloc(n * sizeof(max_heap_el_t), std_allocator.state);
-      for (int i = 0; i < n; i++) {
-        heap_array[i].key = array[i];
-        heap_array[i].data = NULL;
+        insertion_sort(array_copy, n, sizeof(int), cmp_int);
+
+        count++;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        if (elapsed_seconds(start, end) >= min_time)
+          break;
+
+        buffer_allocator_reset(buffer_allocator);
       }
 
-      clock_gettime(CLOCK_MONOTONIC, &start);
-      heap_sort(heap_array, n, std_allocator);
-      clock_gettime(CLOCK_MONOTONIC, &end);
-      double elapsed =
-          (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-      heap_sort_times[r] = elapsed;
+      insertion_sort_times[r] = elapsed_seconds(start, end) / count;
 
-      std_allocator.dealloc(heap_array, std_allocator.state);
+      buffer_allocator_fini(buffer_allocator);
     }
+
     {
-      int *array_copy =
-          std_allocator.alloc(n * sizeof(int), std_allocator.state);
-      for (int i = 0; i < n; i++)
-        array_copy[i] = array[i];
+      allocator_t buffer_allocator = buffer_allocator_init(n * sizeof(int));
 
+      int count = 0;
+      struct timespec start, end;
       clock_gettime(CLOCK_MONOTONIC, &start);
-      quick_sort(array_copy, n, sizeof(int), cmp_int);
-      clock_gettime(CLOCK_MONOTONIC, &end);
-      double elapsed =
-          (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-      quick_sort_times[r] = elapsed;
+      while (1) {
+        int *array_copy =
+            buffer_allocator.alloc(n * sizeof(int), buffer_allocator.state);
+        memcpy(array_copy, array, n * sizeof(int));
 
-      std_allocator.dealloc(array_copy, std_allocator.state);
+        merge_sort(array_copy, n, sizeof(int), cmp_int, std_allocator);
+
+        count++;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        if (elapsed_seconds(start, end) >= min_time)
+          break;
+
+        buffer_allocator_reset(buffer_allocator);
+      }
+
+      merge_sort_times[r] = elapsed_seconds(start, end) / count;
+
+      buffer_allocator_fini(buffer_allocator);
     }
 
-    std_allocator.dealloc(array, std_allocator.state);
+    {
+      allocator_t buffer_allocator =
+          buffer_allocator_init(n * sizeof(max_heap_el_t));
+
+      int count = 0;
+      struct timespec start, end;
+      clock_gettime(CLOCK_MONOTONIC, &start);
+      while (1) {
+        max_heap_el_t *heap_array = buffer_allocator.alloc(
+            n * sizeof(max_heap_el_t), buffer_allocator.state);
+        for (int i = 0; i < n; i++) {
+          heap_array[i].key = array[i];
+          heap_array[i].data = NULL;
+        }
+
+        heap_sort(heap_array, n, std_allocator);
+
+        count++;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        if (elapsed_seconds(start, end) >= min_time)
+          break;
+
+        buffer_allocator_reset(buffer_allocator);
+      }
+
+      heap_sort_times[r] = elapsed_seconds(start, end) / count;
+
+      buffer_allocator_fini(buffer_allocator);
+    }
+
+    {
+      allocator_t buffer_allocator = buffer_allocator_init(n * sizeof(int));
+
+      int count = 0;
+      struct timespec start, end;
+      clock_gettime(CLOCK_MONOTONIC, &start);
+      while (1) {
+        int *array_copy =
+            buffer_allocator.alloc(n * sizeof(int), buffer_allocator.state);
+        memcpy(array_copy, array, n * sizeof(int));
+
+        quick_sort(array_copy, n, sizeof(int), cmp_int);
+
+        count++;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        if (elapsed_seconds(start, end) >= min_time)
+          break;
+
+        buffer_allocator_reset(buffer_allocator);
+      }
+
+      heap_sort_times[r] = elapsed_seconds(start, end) / count;
+
+      buffer_allocator_fini(buffer_allocator);
+    }
   }
+  std_allocator.dealloc(array, std_allocator.state);
 
   double insertion_sort_time = 0, merge_sort_time = 0, heap_sort_time = 0,
          quick_sort_time = 0;
@@ -123,6 +189,7 @@ int main(int argc, char *argv[]) {
   heap_sort_time /= n_runs;
   quick_sort_time /= n_runs;
 
+  printf("INSERTION\tMERGE\tHEAP\tQUICK\n");
   printf("%f\t%f\t%f\t%f\n", insertion_sort_time, merge_sort_time,
          heap_sort_time, quick_sort_time);
 
