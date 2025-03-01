@@ -37,6 +37,12 @@ allocator_t buffer_allocator_init(size_t size) {
   return (allocator_t){buffer_alloc, buffer_dealloc, state};
 }
 
+allocator_t buffer_allocator_reset(allocator_t allocator) {
+  buffer_state_t *state = allocator.state;
+  state->offset = 0;
+  return allocator;
+}
+
 void buffer_allocator_fini(allocator_t allocator) {
   buffer_state_t *state = allocator.state;
   free(state->buffer);
