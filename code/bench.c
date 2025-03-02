@@ -56,14 +56,13 @@ int main(int argc, char *argv[]) {
   double *heap_sort_times =
       std_allocator.alloc(n_runs * sizeof(double), std_allocator.state);
 
-  // Generate a random array of n integers between 0 and m
-  int *array = std_allocator.alloc(n * sizeof(int), std_allocator.state);
-  for (int i = 0; i < n; i++) {
-    array[i] = rand() % m;
-  }
-
   // Run n_runs times on the same array
   for (int r = 0; r < n_runs; r++) {
+    // Generate a random array of n integers between 0 and m
+    int *array = std_allocator.alloc(n * sizeof(int), std_allocator.state);
+    for (int i = 0; i < n; i++) {
+      array[i] = rand() % m;
+    }
 
     // Quick Sort
     {
@@ -155,8 +154,9 @@ int main(int argc, char *argv[]) {
 
       buffer_allocator_fini(buffer_allocator);
     }
+
+    std_allocator.dealloc(array, std_allocator.state);
   }
-  std_allocator.dealloc(array, std_allocator.state);
 
   // Calcolo tempo medio e deviazione standard
   double quick_sort_avg_time = 0, counting_sort_avg_time = 0,
