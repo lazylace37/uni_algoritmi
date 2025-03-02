@@ -7,6 +7,8 @@
 #include "quick_sort.h"
 #include <stdio.h>
 
+static inline int int_get_key(const void *a) { return *(const int *)a; }
+
 int cmp_int(const void *a, const void *b) {
   int x = *(const int *)a;
   int y = *(const int *)b;
@@ -43,32 +45,29 @@ int main(void) {
   {
     printf("Max heap\n");
     max_heap_t max_heap;
-    max_heap_init(&max_heap, 100, allocator);
+    max_heap_init(&max_heap, 5, sizeof(int), int_get_key, allocator);
 
-    arr_el_t el = {.key = 7, .data = NULL};
-    max_heap_insert(&max_heap, el);
-    arr_el_t max = max_heap_get_max(&max_heap);
-    printf("added %d, max: %d\n", el.key, max.key);
+    max_heap_insert(&max_heap, &(int){5});
+    int *max = max_heap_get_max(&max_heap);
+    printf("added %d, max: %d\n", 5, *max);
     max_heap_print(&max_heap);
 
-    arr_el_t el2 = {.key = 9, .data = NULL};
-    max_heap_insert(&max_heap, el2);
+    max_heap_insert(&max_heap, &(int){9});
     max = max_heap_get_max(&max_heap);
-    printf("added %d, max: %d\n", el2.key, max.key);
+    printf("added %d, max: %d\n", 9, *max);
     max_heap_print(&max_heap);
 
-    arr_el_t el3 = {.key = 2, .data = NULL};
-    max_heap_insert(&max_heap, el3);
+    max_heap_insert(&max_heap, &(int){2});
     max = max_heap_get_max(&max_heap);
-    printf("added %d, max: %d\n", el3.key, max.key);
+    printf("added %d, max: %d\n", 2, *max);
     max_heap_print(&max_heap);
 
     max = max_heap_extract_max(&max_heap);
-    printf("extracted max: %d\n", max.key);
+    printf("extracted max: %d\n", *max);
     max_heap_print(&max_heap);
 
     max = max_heap_extract_max(&max_heap);
-    printf("extracted max: %d\n", max.key);
+    printf("extracted max: %d\n", *max);
     max_heap_print(&max_heap);
 
     max_heap_fini(&max_heap);
@@ -78,19 +77,13 @@ int main(void) {
   {
     max_heap_t max_heap;
 
-    arr_el_t *els = allocator.alloc(5 * sizeof(arr_el_t), allocator.state);
-    els[0].key = 5;
-    els[1].key = 2;
-    els[2].key = 4;
-    els[3].key = 6;
-    els[4].key = 1;
+    int array[] = {5, 2, 4, 6, 1, 3};
+    size_t n = sizeof(array) / sizeof(array[0]);
 
-    max_heap_init(&max_heap, 5, allocator);
-    max_heap_build(&max_heap, els, 5);
-    /*max_heap_print(&max_heap);*/
-
+    max_heap_init(&max_heap, 5, sizeof(int), int_get_key, allocator);
+    max_heap_build(&max_heap, array, n);
+    max_heap_print(&max_heap);
     max_heap_fini(&max_heap);
-    allocator.dealloc(els, allocator.state);
   }
 
   {
@@ -104,12 +97,11 @@ int main(void) {
 
   {
     printf("Heap sort\n");
-    arr_el_t array[] = {{5, NULL}, {2, NULL}, {4, NULL},
-                        {6, NULL}, {1, NULL}, {3, NULL}};
+    int array[] = {5, 2, 4, 6, 1, 3};
     size_t n = sizeof(array) / sizeof(array[0]);
-    heap_sort(array, n, allocator);
+    heap_sort(array, n, sizeof(int), int_get_key, allocator);
     for (size_t i = 0; i < n; i++) {
-      printf("%d ", array[i].key);
+      printf("%d ", array[i]);
     }
     printf("\n");
     printf("\n");
@@ -117,14 +109,13 @@ int main(void) {
 
   {
     printf("Counting sort\n");
-    arr_el_t array[] = {{5, NULL}, {2, NULL}, {4, NULL},
-                        {6, NULL}, {1, NULL}, {3, NULL}};
+    int array[] = {5, 2, 4, 6, 1, 3};
     size_t n = sizeof(array) / sizeof(array[0]);
 
-    arr_el_t *out = allocator.alloc(n * sizeof(arr_el_t), allocator.state);
-    counting_sort(array, n, 6, out, allocator);
+    int *out = allocator.alloc(n * sizeof(int), allocator.state);
+    counting_sort(array, n, 6, sizeof(int), out, int_get_key, allocator);
     for (size_t i = 0; i < n; i++) {
-      printf("%d ", out[i].key);
+      printf("%d ", out[i]);
     }
     printf("\n");
     allocator.dealloc(out, allocator.state);

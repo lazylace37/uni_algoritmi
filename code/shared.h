@@ -1,11 +1,9 @@
 #ifndef __H_SHARED__
 #define __H_SHARED__
-
-typedef struct {
-  int key;
-  void *data;
-} arr_el_t;
+#include <stddef.h>
 
 typedef int (*cmp)(const void *, const void *);
+
+typedef int (*get_key)(const void *);
 
 #endif // !__H_SHARED__

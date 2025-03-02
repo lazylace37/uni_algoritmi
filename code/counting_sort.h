@@ -4,7 +4,7 @@
 #include "shared.h"
 #include <stddef.h>
 
-void counting_sort(arr_el_t *arr, size_t n, size_t k, arr_el_t *out,
-                   allocator_t allocator);
+void counting_sort(void *arr, size_t n, size_t k, size_t el_size, void *out,
+                   get_key get_key, allocator_t allocator);
 
 #endif // !__H_COUNTING_SORT_
