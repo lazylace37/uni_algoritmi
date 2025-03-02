@@ -42,7 +42,7 @@ def setup_chart(times_map):
     quick_sort, counting_sort, heap_sort = list(zip(*mean_times))
     quick_sort_stddev, counting_sort_stddev, heap_sort_stddev = list(zip(*std_devs))
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 8))
     plt.plot(x, quick_sort, marker="s", label="Quick Sort")
     plt.fill_between(
         x,
@@ -78,7 +78,8 @@ def main():
         times_map = sorted(res_map.items())
 
         plt = setup_chart(times_map)
-        plt.title("Sorting Algorithm Performance Comparison")
+        plt.suptitle("Sorting Algorithm Performance Comparison")
+        plt.title("m = 100,000")
         plt.xlabel("Input Size (n)")
         plt.ylabel("Execution Time (seconds)")
         plt.legend()
@@ -87,7 +88,7 @@ def main():
 
         plt.xscale("log")
         plt.yscale("log")
-        plt.savefig("benchmark_n_log.png")
+        plt.savefig("benchmark_n_m=100_000_log.png")
 
         ## Grafico in funzione di m
         m = [int(10 * 1.123324033**i) for i in range(0, 100)]
@@ -98,16 +99,17 @@ def main():
         times_map = sorted(res_map_1.items())
 
         plt = setup_chart(times_map)
-        plt.title("Sorting Algorithm Performance Comparison")
+        plt.suptitle("Sorting Algorithm Performance Comparison")
+        plt.title("n = 10,000")
         plt.xlabel("Range (m)")
         plt.ylabel("Execution Time (seconds)")
         plt.legend()
         plt.grid(True, which="both", linestyle="--")
-        plt.savefig("benchmark_m.png")
+        plt.savefig("benchmark_m_n=10_000.png")
 
         plt.xscale("log")
         plt.yscale("log")
-        plt.savefig("benchmark_m_log.png")
+        plt.savefig("benchmark_m_n=10_000_log.png")
 
 
 if __name__ == "__main__":
