@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-N_PROC = multiprocessing.cpu_count
+N_PROC = multiprocessing.cpu_count() // 2
 N_RUNS = 20
 
 
@@ -73,7 +73,7 @@ def main():
         n = [100 * 1.072267222**i for i in range(0, 100)]
 
         res_map = manager.dict()
-        with Pool(processes=4) as pool:
+        with Pool(processes=N_PROC) as pool:
             pool.map(partial(run_experiment, m=100_000, res=res_map), n)
         times_map = sorted(res_map.items())
 
@@ -83,7 +83,7 @@ def main():
         plt.ylabel("Execution Time (seconds)")
         plt.legend()
         plt.grid(True, which="both", linestyle="--")
-        plt.savefig("benchmark_n.png")
+        plt.savefig("benchmark_n_m=100_000.png")
 
         plt.xscale("log")
         plt.yscale("log")
@@ -93,7 +93,7 @@ def main():
         m = [10 * 1.123324033**i for i in range(0, 100)]
 
         res_map_1 = manager.dict()
-        with Pool(processes=4) as pool:
+        with Pool(processes=N_PROC) as pool:
             pool.map(partial(run_experiment_l, n=10_000, res=res_map_1), m)
         times_map = sorted(res_map_1.items())
 
