@@ -4,9 +4,11 @@
 #include "heap_sort.h"
 #include "math.h"
 #include "quick_sort.h"
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
 #include <time.h>
 
 static inline int int_get_key(const void *a) { return *(const int *)a; }
@@ -36,6 +38,15 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  struct sched_param schedp;
+  memset(&schedp, 0, sizeof(schedp));
+  schedp.sched_priority = 50;
+  int res = sched_setscheduler(0, SCHED_FIFO, &schedp);
+  if (res != 0) {
+    fprintf(stderr, "Cannot set priority to %d, using default\n",
+            schedp.sched_priority);
+  }
+
   // Calcola il tempo minimo misurabile
   double clock_res = clock_resolution();
   double max_relative_error = 0.001;
@@ -44,7 +55,6 @@ int main(int argc, char *argv[]) {
   int n = atoi(argv[1]);
   int m = atoi(argv[2]);
   int n_runs = atoi(argv[3]);
-  fprintf(stderr, "%s n=%d m=%d n_runs=%d\n", argv[0], n, m, n_runs);
 
   allocator_t std_allocator = get_default_allocator();
   double *quick_sort_times =
