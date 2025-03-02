@@ -85,6 +85,10 @@ def main():
         plt.grid(True, which="both", linestyle="--")
         plt.savefig("benchmark_n.png")
 
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.savefig("benchmark_n_log.png")
+
         ## Grafico in funzione di m
         m = [10 * 1.123324033**i for i in range(0, 100)]
 
@@ -99,8 +103,11 @@ def main():
         plt.ylabel("Execution Time (seconds)")
         plt.legend()
         plt.grid(True, which="both", linestyle="--")
-        # plt.show()
         plt.savefig("benchmark_m.png")
+
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.savefig("benchmark_m_log.png")
 
 
 if __name__ == "__main__":
