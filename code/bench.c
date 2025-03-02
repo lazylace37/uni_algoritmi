@@ -194,9 +194,9 @@ int main(int argc, char *argv[]) {
 
   // Print risultati
   printf("QUICK SORT\tCOUNTING SORT\tHEAP SORT\n");
-  printf("%f\t%f\t%f\n", quick_sort_avg_time, counting_sort_avg_time,
+  printf("%.15f\t%.15f\t%.15f\n", quick_sort_avg_time, counting_sort_avg_time,
          heap_sort_avg_time);
-  printf("%f\t%f\t%f\n", quick_sort_std_dev, counting_sort_std_dev,
+  printf("%.15f\t%.15f\t%.15f\n", quick_sort_std_dev, counting_sort_std_dev,
          heap_sort_std_dev);
 
   std_allocator.dealloc(quick_sort_times, std_allocator.state);
