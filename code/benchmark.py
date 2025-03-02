@@ -70,7 +70,7 @@ def setup_chart(times_map):
 def main():
     with Manager() as manager:
         ## Grafico in funzione di n
-        n = [100 * 1.072267222**i for i in range(0, 100)]
+        n = [int(100 * 1.072267222**i) for i in range(0, 100)]
 
         res_map = manager.dict()
         with Pool(processes=N_PROC) as pool:
@@ -90,7 +90,7 @@ def main():
         plt.savefig("benchmark_n_log.png")
 
         ## Grafico in funzione di m
-        m = [10 * 1.123324033**i for i in range(0, 100)]
+        m = [int(10 * 1.123324033**i) for i in range(0, 100)]
 
         res_map_1 = manager.dict()
         with Pool(processes=N_PROC) as pool:
