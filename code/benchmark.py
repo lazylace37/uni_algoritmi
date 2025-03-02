@@ -47,13 +47,12 @@ def main():
         times_map = sorted(res_map.items())
         x = [n for n, _ in times_map]
         results = list(zip(*[values for _, values in times_map]))
-        insertion_sort, merge_sort, heap_sort, quick_sort = results
+        quick_sort, counting_sort, heap_sort = results
 
         plt.figure(figsize=(10, 6))
-        plt.plot(x, insertion_sort, marker="o", label="Insertion Sort")
-        plt.plot(x, merge_sort, marker="s", label="Merge Sort")
+        plt.plot(x, quick_sort, marker="s", label="Quick Sort")
+        plt.plot(x, counting_sort, marker="o", label="Counting Sort")
         plt.plot(x, heap_sort, marker="^", label="Heap Sort")
-        plt.plot(x, quick_sort, marker="*", label="Quick Sort")
         plt.title("Sorting Algorithm Performance Comparison")
         plt.xlabel("Input Size (n)")
         plt.ylabel("Execution Time (seconds)")
@@ -75,13 +74,12 @@ def main():
         times_map = sorted(res_map_1.items())
         x = [n for n, _ in times_map]
         results = list(zip(*[values for _, values in times_map]))
-        insertion_sort, merge_sort, heap_sort, quick_sort = results
+        quick_sort, counting_sort, heap_sort = results
 
         plt.figure(figsize=(10, 6))
-        plt.plot(x, insertion_sort, marker="o", label="Insertion Sort")
-        plt.plot(x, merge_sort, marker="s", label="Merge Sort")
+        plt.plot(x, quick_sort, marker="s", label="Quick Sort")
+        plt.plot(x, counting_sort, marker="o", label="Counting Sort")
         plt.plot(x, heap_sort, marker="^", label="Heap Sort")
-        plt.plot(x, quick_sort, marker="*", label="Quick Sort")
         plt.title("Sorting Algorithm Performance Comparison")
         plt.xlabel("Range (m)")
         plt.ylabel("Execution Time (seconds)")
