@@ -1,26 +1,25 @@
 #include "heap_sort.h"
 #include <string.h>
 
-void heap_sort(void *arr, size_t n, size_t el_size, get_key get_key,
+void heap_sort(void *arr, size_t n, size_t el_size, cmp cmp,
                allocator_t allocator) {
-  max_heap_t max_heap;
-  max_heap_init(&max_heap, n, el_size, get_key, allocator);
-  max_heap_build(&max_heap, arr, n);
+  heap_t heap;
+  heap_init(&heap, n, el_size, cmp, allocator);
+  heap_build(&heap, arr, n);
   char tmp[el_size];
-  for (size_t i = max_heap.n_items - 1; i > 0; i--) {
-    memcpy(tmp, max_heap.items, el_size);
-    memcpy(max_heap.items, max_heap.items + i * max_heap.el_size,
-           max_heap.el_size);
-    memcpy(max_heap.items + i * max_heap.el_size, tmp, max_heap.el_size);
+  for (size_t i = heap.n_items - 1; i > 0; i--) {
+    memcpy(tmp, heap.items, el_size);
+    memcpy(heap.items, heap.items + i * heap.el_size, heap.el_size);
+    memcpy(heap.items + i * heap.el_size, tmp, heap.el_size);
 
-    max_heap.n_items--;
-    max_heap_heapify(&max_heap, 0);
+    heap.n_items--;
+    heap_heapify(&heap, 0);
   }
 
   // Copy the sorted array back to the input array.
   for (size_t i = 0; i < n; i++) {
-    memcpy(arr + i * el_size, max_heap.items + i * el_size, el_size);
+    memcpy(arr + i * el_size, heap.items + i * el_size, el_size);
   }
 
-  max_heap_fini(&max_heap);
+  heap_fini(&heap);
 }
