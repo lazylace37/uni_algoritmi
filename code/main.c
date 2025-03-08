@@ -5,6 +5,7 @@
 #include "insertion_sort.h"
 #include "merge_sort.h"
 #include "quick_sort.h"
+#include "quick_sort_3_way.h"
 #include <stdio.h>
 
 static inline int int_get_key(const void *a) { return *(const int *)a; }
@@ -132,6 +133,15 @@ int main(void) {
     }
     printf("\n");
     allocator.dealloc(out, allocator.state);
+    printf("\n");
+  }
+
+  {
+    printf("Quick sort 3-way\n");
+    int array[] = {5, 2, 4, 6, 1, 3};
+    size_t n = sizeof(array) / sizeof(array[0]);
+    quick_sort_3_way(array, n, sizeof(int), cmp_int);
+    print_array(array, n);
     printf("\n");
   }
 
