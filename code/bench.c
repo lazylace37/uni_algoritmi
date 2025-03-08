@@ -4,6 +4,7 @@
 #include "heap_sort.h"
 #include "math.h"
 #include "quick_sort.h"
+#include "quick_sort_3_way.h"
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -134,7 +135,30 @@ int main(int argc, char *argv[]) {
 
     // Quick Sort 3-way
     {
-      // TODO
+      allocator_t buffer_allocator = buffer_allocator_init(n * sizeof(int));
+
+      int count = 0;
+      struct timespec start, end;
+      clock_gettime(CLOCK_MONOTONIC, &start);
+      while (1) {
+        int *array_copy =
+            buffer_allocator.alloc(n * sizeof(int), buffer_allocator.state);
+        memcpy(array_copy, array, n * sizeof(int));
+
+        quick_sort_3_way(array_copy, n, sizeof(int), cmp_int);
+
+        count++;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        if (elapsed_seconds(start, end) >= min_time)
+          break;
+
+        buffer_allocator_reset(buffer_allocator);
+      }
+
+      quick_sort_3way_times[r] = elapsed_seconds(start, end) / count;
+
+      buffer_allocator_fini(buffer_allocator);
     }
 
     // Heap Sort
@@ -170,37 +194,44 @@ int main(int argc, char *argv[]) {
 
   // Calcolo tempo medio e deviazione standard
   double quick_sort_avg_time = 0, counting_sort_avg_time = 0,
-         heap_sort_avg_time = 0;
+         quick_sort_3way_avg_time = 0, heap_sort_avg_time = 0;
   for (int r = 0; r < n_runs; r++) {
     quick_sort_avg_time += quick_sort_times[r];
     counting_sort_avg_time += counting_sort_times[r];
+    quick_sort_3way_avg_time += quick_sort_3way_times[r];
     heap_sort_avg_time += heap_sort_times[r];
   }
   quick_sort_avg_time /= n_runs;
   counting_sort_avg_time /= n_runs;
+  quick_sort_3way_avg_time /= n_runs;
   heap_sort_avg_time /= n_runs;
 
   double quick_sort_std_dev = 0, counting_sort_std_dev = 0,
-         heap_sort_std_dev = 0;
+         quick_sort_3way_std_dev = 0, heap_sort_std_dev = 0;
   for (int r = 0; r < n_runs; r++) {
     quick_sort_std_dev += pow(quick_sort_times[r] - quick_sort_avg_time, 2);
     counting_sort_std_dev +=
         pow(counting_sort_times[r] - counting_sort_avg_time, 2);
+    quick_sort_3way_std_dev +=
+        pow(quick_sort_3way_times[r] - quick_sort_3way_avg_time, 2);
     heap_sort_std_dev += pow(heap_sort_times[r] - heap_sort_avg_time, 2);
   }
   quick_sort_std_dev = sqrt(quick_sort_std_dev / n_runs);
   counting_sort_std_dev = sqrt(counting_sort_std_dev / n_runs);
+  quick_sort_3way_std_dev = sqrt(quick_sort_3way_std_dev / n_runs);
   heap_sort_std_dev = sqrt(heap_sort_std_dev / n_runs);
 
   // Print risultati
-  printf("QUICK SORT\tCOUNTING SORT\tHEAP SORT\n");
-  printf("%.15f\t%.15f\t%.15f\n", quick_sort_avg_time, counting_sort_avg_time,
-         heap_sort_avg_time);
-  printf("%.15f\t%.15f\t%.15f\n", quick_sort_std_dev, counting_sort_std_dev,
-         heap_sort_std_dev);
+  printf("QUICK SORT\tCOUNTING SORT\tQUICK SORT 3-WAY\tHEAP SORT\n");
+  printf("%.15f\t%.15f\t%.15f\t%.15f\n", quick_sort_avg_time,
+         counting_sort_avg_time, quick_sort_3way_avg_time, heap_sort_avg_time);
+  printf("%.15f\t%.15f\t%.15f\t%.15f\n", quick_sort_std_dev,
+         counting_sort_std_dev, quick_sort_3way_std_dev, heap_sort_std_dev);
 
   std_allocator.dealloc(quick_sort_times, std_allocator.state);
   std_allocator.dealloc(counting_sort_times, std_allocator.state);
+  std_allocator.dealloc(quick_sort_3way_times, std_allocator.state);
+  std_allocator.dealloc(heap_sort_times, std_allocator.state);
 
   return 0;
 }

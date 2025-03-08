@@ -39,8 +39,13 @@ def setup_chart(times_map):
     x = [n for n, _ in times_map]
     mean_times = [run[0] for _, run in times_map]
     std_devs = [run[1] for _, run in times_map]
-    quick_sort, counting_sort, heap_sort = list(zip(*mean_times))
-    quick_sort_stddev, counting_sort_stddev, heap_sort_stddev = list(zip(*std_devs))
+    quick_sort, counting_sort, quick_sort_3_way, heap_sort = list(zip(*mean_times))
+    (
+        quick_sort_stddev,
+        counting_sort_stddev,
+        quick_sort_3_way_stddev,
+        heap_sort_stddev,
+    ) = list(zip(*std_devs))
 
     plt.figure(figsize=(12, 8))
     plt.plot(x, quick_sort, marker="s", label="Quick Sort")
@@ -55,6 +60,13 @@ def setup_chart(times_map):
         x,
         [t - s for t, s in zip(counting_sort, counting_sort_stddev)],
         [t + s for t, s in zip(counting_sort, counting_sort_stddev)],
+        alpha=0.2,
+    )
+    plt.plot(x, quick_sort_3_way, marker="x", label="Quick Sort 3-Way")
+    plt.fill_between(
+        x,
+        [t - s for t, s in zip(quick_sort_3_way, quick_sort_3_way_stddev)],
+        [t + s for t, s in zip(quick_sort_3_way, quick_sort_3_way_stddev)],
         alpha=0.2,
     )
     plt.plot(x, heap_sort, marker="^", label="Heap Sort")
