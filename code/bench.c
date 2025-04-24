@@ -5,11 +5,9 @@
 #include "math.h"
 #include "quick_sort.h"
 #include "quick_sort_3_way.h"
-#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/resource.h>
 #include <time.h>
 
 static inline int int_get_key(const void *a) { return *(const int *)a; }
@@ -24,6 +22,7 @@ double elapsed_seconds(struct timespec start, struct timespec end) {
   return (end.tv_sec - start.tv_sec) +
          ((end.tv_nsec - start.tv_nsec) / (double)1e9);
 }
+
 double clock_resolution() {
   struct timespec start, end;
   clock_gettime(CLOCK_MONOTONIC, &start);
@@ -37,15 +36,6 @@ int main(int argc, char *argv[]) {
   if (argc < 4) {
     fprintf(stderr, "Usage: %s <length> <max_value> <n_runs>\n", argv[0]);
     return 1;
-  }
-
-  struct sched_param schedp;
-  memset(&schedp, 0, sizeof(schedp));
-  schedp.sched_priority = 50;
-  int res = sched_setscheduler(0, SCHED_FIFO, &schedp);
-  if (res != 0) {
-    fprintf(stderr, "Cannot set priority to %d, using default\n",
-            schedp.sched_priority);
   }
 
   // Calcola il tempo minimo misurabile
