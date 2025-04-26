@@ -124,11 +124,12 @@ int main(void) {
 
   {
     printf("Counting sort\n");
-    int array[] = {5, 2, 4, 6, 1, 3};
+    int array[] = {10, 0, 1, 2, 2, 10, 2, 6};
     size_t n = sizeof(array) / sizeof(array[0]);
+    size_t k = 10;
 
     int *out = allocator.alloc(n * sizeof(int), allocator.state);
-    counting_sort(array, n, 7, sizeof(int), out, int_get_key, allocator);
+    counting_sort(array, n, k, sizeof(int), out, int_get_key, allocator);
     for (size_t i = 0; i < n; i++) {
       printf("%d ", out[i]);
     }

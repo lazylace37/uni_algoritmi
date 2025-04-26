@@ -94,8 +94,8 @@ int main(int argc, char *argv[]) {
 
     // Counting Sort
     {
-      size_t buffer_size = n * sizeof(int)    // output array
-                           + m * sizeof(int); // count array
+      size_t buffer_size = n * sizeof(int)          // output array
+                           + (m + 1) * sizeof(int); // count array
       allocator_t buffer_allocator = buffer_allocator_init(buffer_size);
 
       int count = 0;
