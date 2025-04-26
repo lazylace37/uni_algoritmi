@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
             buffer_allocator.alloc(n * sizeof(int), buffer_allocator.state);
         memcpy(array_copy, array, n * sizeof(int));
 
-        heap_sort(array_copy, n, sizeof(int), cmp_int, std_allocator);
+        heap_sort(array_copy, n, sizeof(int), cmp_int);
 
         count++;
         clock_gettime(CLOCK_MONOTONIC, &end);

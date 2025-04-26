@@ -10,13 +10,13 @@ typedef struct {
   size_t n_items;
   size_t capacity;
   cmp_f cmp;
-  allocator_t allocator;
 } heap_t;
 
-void heap_init(heap_t *heap, size_t capacity, size_t el_size, cmp_f cmp,
-               allocator_t allocator);
+void heap_init(heap_t *heap, void *items, size_t capacity, size_t el_size,
+               cmp_f cmp);
 
-int heap_build(heap_t *heap, void *els, size_t n);
+int heap_build(heap_t *heap, void *items, size_t n, size_t capacity,
+               size_t el_size, cmp_f cmp);
 
 void *heap_get_max(heap_t *heap);
 
@@ -29,7 +29,5 @@ void *heap_extract(heap_t *heap);
 void heap_heapify(heap_t *heap, size_t i);
 
 int heap_insert(heap_t *heap, void *el);
-
-void heap_fini(heap_t *heap);
 
 #endif // !__H_HEAP_

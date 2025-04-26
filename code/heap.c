@@ -8,31 +8,25 @@ static inline size_t parent(size_t i) { return i / 2; }
 static inline size_t left(size_t i) { return 2 * i + 1; }
 static inline size_t right(size_t i) { return 2 * i + 2; }
 
-void heap_init(heap_t *heap, size_t capacity, size_t el_size, cmp_f cmp,
-               allocator_t allocator) {
-  heap->items = allocator.alloc(capacity * el_size, allocator.state);
+void heap_init(heap_t *heap, void *items, size_t capacity, size_t el_size,
+               cmp_f cmp) {
+  heap->items = items;
   heap->el_size = el_size;
   heap->n_items = 0;
   heap->capacity = capacity;
   heap->cmp = cmp;
-  heap->allocator = allocator;
 }
 
-int heap_build(heap_t *heap, void *els, size_t n) {
+int heap_build(heap_t *heap, void *items, size_t n, size_t capacity,
+               size_t el_size, cmp_f cmp) {
   assert(heap != NULL);
-  assert(heap->n_items == 0);
-  assert(els != NULL);
-  if (n > heap->capacity) {
-    return 1;
-  }
-
+  heap->items = items;
+  heap->el_size = el_size;
   heap->n_items = n;
-  for (size_t i = 0; i < n; i++) {
-    memcpy(heap->items + i * heap->el_size, els + i * heap->el_size,
-           heap->el_size);
-  }
+  heap->capacity = capacity;
+  heap->cmp = cmp;
 
-  for (ssize_t i = n / 2; i >= 0; i--) {
+  for (ssize_t i = heap->n_items / 2; i >= 0; i--) {
     heap_heapify(heap, i);
   }
   return 0;
@@ -145,9 +139,4 @@ int heap_insert(heap_t *heap, void *el) {
     i = parent(i);
   }
   return 0;
-}
-
-void heap_fini(heap_t *heap) {
-  assert(heap != NULL);
-  heap->allocator.dealloc(heap->items, heap->allocator.state);
 }

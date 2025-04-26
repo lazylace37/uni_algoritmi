@@ -60,7 +60,8 @@ int main(void) {
   {
     printf("Max heap\n");
     heap_t heap;
-    heap_init(&heap, 5, sizeof(int), cmp_int, allocator);
+    void *items = allocator.alloc(5 * sizeof(int), allocator.state);
+    heap_init(&heap, items, 5, sizeof(int), cmp_int);
 
     heap_insert(&heap, &(int){5});
     int *max = heap_get_max(&heap);
@@ -84,9 +85,9 @@ int main(void) {
     max = heap_extract(&heap);
     printf("extracted max: %d\n", *max);
     heap_print(&heap);
-
-    heap_fini(&heap);
     printf("\n");
+
+    allocator.dealloc(items, allocator.state);
   }
 
   {
@@ -95,10 +96,9 @@ int main(void) {
     int array[] = {5, 2, 4, 6, 1, 3};
     size_t n = sizeof(array) / sizeof(array[0]);
 
-    heap_init(&heap, 5, sizeof(int), cmp_int, allocator);
-    heap_build(&heap, array, n);
+    heap_init(&heap, array, 6, sizeof(int), cmp_int);
+    heap_build(&heap, array, n, n, sizeof(int), cmp_int);
     heap_print(&heap);
-    heap_fini(&heap);
   }
 
   {
@@ -114,7 +114,7 @@ int main(void) {
     printf("Heap sort\n");
     int array[] = {5, 2, 4, 6, 1, 3};
     size_t n = sizeof(array) / sizeof(array[0]);
-    heap_sort(array, n, sizeof(int), cmp_int_rev, allocator);
+    heap_sort(array, n, sizeof(int), cmp_int);
     for (size_t i = 0; i < n; i++) {
       printf("%d ", array[i]);
     }

@@ -1,11 +1,9 @@
 #include "heap_sort.h"
 #include <string.h>
 
-void heap_sort(void *arr, size_t n, size_t el_size, cmp_f cmp,
-               allocator_t allocator) {
-  heap_t heap;
-  heap_init(&heap, n, el_size, cmp, allocator);
-  heap_build(&heap, arr, n);
+void heap_sort(void *arr, size_t n, size_t el_size, cmp_f cmp) {
+  heap_t heap = {0};
+  heap_build(&heap, arr, n, n, el_size, cmp);
 
   char *items = (char *)heap.items;
 
@@ -18,11 +16,4 @@ void heap_sort(void *arr, size_t n, size_t el_size, cmp_f cmp,
     heap.n_items--;
     heap_heapify(&heap, 0);
   }
-
-  // Copy the sorted array back to the input array.
-  for (size_t i = 0; i < n; i++) {
-    memcpy(arr + i * el_size, items + i * el_size, el_size);
-  }
-
-  heap_fini(&heap);
 }
