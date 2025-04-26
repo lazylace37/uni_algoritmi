@@ -57,12 +57,11 @@ int main(int argc, char *argv[]) {
   double *heap_sort_times =
       std_allocator.alloc(n_runs * sizeof(double), std_allocator.state);
 
-  // Run n_runs times on the same array
   for (int r = 0; r < n_runs; r++) {
-    // Generate a random array of n integers between 0 and m
+    // Generate a random array of n integers in [1, m]
     int *array = std_allocator.alloc(n * sizeof(int), std_allocator.state);
     for (int i = 0; i < n; i++) {
-      array[i] = rand() % m;
+      array[i] = rand() % m + 1;
     }
 
     // Quick Sort
@@ -178,7 +177,6 @@ int main(int argc, char *argv[]) {
 
       buffer_allocator_fini(buffer_allocator);
     }
-
     std_allocator.dealloc(array, std_allocator.state);
   }
 
