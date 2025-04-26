@@ -1,8 +1,9 @@
 #include "quick_sort.h"
+#include "shared.h"
 #include <stdio.h>
 #include <string.h>
 
-size_t partition(void *_array, size_t p, size_t q, size_t el_size, cmp cmp) {
+size_t partition(void *_array, size_t p, size_t q, size_t el_size, cmp_f cmp) {
   char *arr_ptr = (char *)_array;
 
   size_t i = p;
@@ -25,7 +26,7 @@ size_t partition(void *_array, size_t p, size_t q, size_t el_size, cmp cmp) {
   return i;
 }
 
-void _quick_sort(void *array, size_t p, size_t q, size_t el_size, cmp cmp) {
+void _quick_sort(void *array, size_t p, size_t q, size_t el_size, cmp_f cmp) {
   if (p < q) {
     size_t r = partition(array, p, q, el_size, cmp);
     if (r > 0)
@@ -34,6 +35,6 @@ void _quick_sort(void *array, size_t p, size_t q, size_t el_size, cmp cmp) {
   }
 }
 
-void quick_sort(void *array, size_t n, size_t el_size, cmp cmp) {
+void quick_sort(void *array, size_t n, size_t el_size, cmp_f cmp) {
   _quick_sort(array, 0, n - 1, el_size, cmp);
 }

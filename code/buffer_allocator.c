@@ -18,7 +18,7 @@ void *buffer_alloc(size_t size, void *state) {
     return NULL;
   }
 
-  void *ptr = buffer_state->buffer + buffer_state->offset;
+  void *ptr = (char *)buffer_state->buffer + buffer_state->offset;
   buffer_state->offset += size;
   return ptr;
 }

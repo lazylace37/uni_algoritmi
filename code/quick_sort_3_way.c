@@ -3,7 +3,7 @@
 #include <string.h>
 
 static void partition(void *_array, size_t p, size_t q, size_t *out_l,
-                      size_t *out_r, size_t el_size, cmp cmp) {
+                      size_t *out_r, size_t el_size, cmp_f cmp) {
   char *array = (char *)_array;
 
   void *x = array + q * el_size;
@@ -36,7 +36,7 @@ static void partition(void *_array, size_t p, size_t q, size_t *out_l,
 }
 
 static void _quick_sort_3_way(void *array, size_t p, size_t q, size_t el_size,
-                              cmp cmp) {
+                              cmp_f cmp) {
   if (p < q) {
     size_t l, r;
     partition(array, p, q, &l, &r, el_size, cmp);
@@ -47,6 +47,6 @@ static void _quick_sort_3_way(void *array, size_t p, size_t q, size_t el_size,
   }
 }
 
-void quick_sort_3_way(void *array, size_t n, size_t el_size, cmp cmp) {
+void quick_sort_3_way(void *array, size_t n, size_t el_size, cmp_f cmp) {
   _quick_sort_3_way(array, 0, n - 1, el_size, cmp);
 }

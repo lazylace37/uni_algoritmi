@@ -23,12 +23,12 @@ double elapsed_seconds(struct timespec start, struct timespec end) {
          ((end.tv_nsec - start.tv_nsec) / (double)1e9);
 }
 
-double clock_resolution() {
+double clock_resolution(void) {
   struct timespec start, end;
   clock_gettime(CLOCK_MONOTONIC, &start);
   do {
     clock_gettime(CLOCK_MONOTONIC, &end);
-  } while (elapsed_seconds(start, end) == 0.0);
+  } while (elapsed_seconds(start, end) <= 1.0e-05f);
   return elapsed_seconds(start, end);
 }
 

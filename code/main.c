@@ -30,8 +30,9 @@ void print_array(int *array, size_t n) {
 }
 
 void heap_print(heap_t *heap) {
+  char *items = heap->items;
   for (size_t i = 0; i < heap->n_items; i++) {
-    printf("%d ", *(int *)(heap->items + i * heap->el_size));
+    printf("%d ", *(int *)(items + i * heap->el_size));
   }
   printf("\n");
 }

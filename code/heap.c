@@ -8,7 +8,7 @@ static inline size_t parent(size_t i) { return i / 2; }
 static inline size_t left(size_t i) { return 2 * i + 1; }
 static inline size_t right(size_t i) { return 2 * i + 2; }
 
-void heap_init(heap_t *heap, size_t capacity, size_t el_size, cmp cmp,
+void heap_init(heap_t *heap, size_t capacity, size_t el_size, cmp_f cmp,
                allocator_t allocator) {
   heap->items = allocator.alloc(capacity * el_size, allocator.state);
   heap->el_size = el_size;
@@ -48,18 +48,20 @@ void *heap_extract(heap_t *heap) {
   assert(heap != NULL);
   assert(heap->n_items > 0);
 
+  char *items = (char *)heap->items;
+
   // Swap the first element with the last element.
   char tmp[heap->el_size];
-  memcpy(tmp, heap->items, heap->el_size);
-  memcpy(heap->items, heap->items + (heap->n_items - 1) * heap->el_size,
+  memcpy(tmp, items, heap->el_size);
+  memcpy(heap->items, items + (heap->n_items - 1) * heap->el_size,
          heap->el_size);
-  memcpy(heap->items + (heap->n_items - 1) * heap->el_size, tmp, heap->el_size);
+  memcpy(items + (heap->n_items - 1) * heap->el_size, tmp, heap->el_size);
 
   heap->n_items--;
 
   if (heap->n_items > 1) // Restore the heap property.
     heap_heapify(heap, 0);
-  return heap->items + heap->n_items * heap->el_size;
+  return items + heap->n_items * heap->el_size;
 }
 
 /*void heap_increase_priority(heap_t *heap, size_t i, int inc) {*/
@@ -91,26 +93,27 @@ void heap_heapify(heap_t *heap, size_t i) {
     return;
   }
 
+  char *items = (char *)heap->items;
+
   size_t l = left(i);
   size_t r = right(i);
   size_t m = i;
 
-  if (l < heap->n_items && heap->cmp(heap->items + l * heap->el_size,
-                                     heap->items + i * heap->el_size) > 0) {
+  if (l < heap->n_items &&
+      heap->cmp(items + l * heap->el_size, items + i * heap->el_size) > 0) {
     m = l;
   }
-  if (r < heap->n_items && heap->cmp(heap->items + r * heap->el_size,
-                                     heap->items + m * heap->el_size) > 0) {
+  if (r < heap->n_items &&
+      heap->cmp(items + r * heap->el_size, items + m * heap->el_size) > 0) {
     m = r;
   }
 
   char tmp[heap->el_size];
   if (m != i) {
     // Swap the two elements.
-    memcpy(tmp, heap->items + i * heap->el_size, heap->el_size);
-    memcpy(heap->items + i * heap->el_size, heap->items + m * heap->el_size,
-           heap->el_size);
-    memcpy(heap->items + m * heap->el_size, tmp, heap->el_size);
+    memcpy(tmp, items + i * heap->el_size, heap->el_size);
+    memcpy(items + i * heap->el_size, items + m * heap->el_size, heap->el_size);
+    memcpy(items + m * heap->el_size, tmp, heap->el_size);
 
     heap_heapify(heap, m);
   }
@@ -122,20 +125,22 @@ int heap_insert(heap_t *heap, void *el) {
     return 1;
   }
 
+  char *items = (char *)heap->items;
+
   // Insert the element at the end of the heap.
-  memcpy(heap->items + heap->n_items * heap->el_size, el, heap->el_size);
+  memcpy(items + heap->n_items * heap->el_size, el, heap->el_size);
   heap->n_items++;
 
   // Swap with its parent until greater.
   size_t i = heap->n_items - 1;
   char tmp[heap->el_size];
-  while (i > 0 && heap->cmp(heap->items + i * heap->el_size,
-                            heap->items + parent(i) * heap->el_size) > 0) {
+  while (i > 0 && heap->cmp(items + i * heap->el_size,
+                            items + parent(i) * heap->el_size) > 0) {
     // Swap the two elements.
-    memcpy(tmp, heap->items + i * heap->el_size, heap->el_size);
-    memcpy(heap->items + i * heap->el_size,
-           heap->items + parent(i) * heap->el_size, heap->el_size);
-    memcpy(heap->items + parent(i) * heap->el_size, tmp, heap->el_size);
+    memcpy(tmp, items + i * heap->el_size, heap->el_size);
+    memcpy(items + i * heap->el_size, items + parent(i) * heap->el_size,
+           heap->el_size);
+    memcpy(items + parent(i) * heap->el_size, tmp, heap->el_size);
 
     i = parent(i);
   }

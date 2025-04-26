@@ -9,11 +9,11 @@ typedef struct {
   size_t el_size;
   size_t n_items;
   size_t capacity;
-  cmp cmp;
+  cmp_f cmp;
   allocator_t allocator;
 } heap_t;
 
-void heap_init(heap_t *heap, size_t capacity, size_t el_size, cmp cmp,
+void heap_init(heap_t *heap, size_t capacity, size_t el_size, cmp_f cmp,
                allocator_t allocator);
 
 int heap_build(heap_t *heap, void *els, size_t n);

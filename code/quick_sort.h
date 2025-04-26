@@ -3,6 +3,6 @@
 #include "shared.h"
 #include <stddef.h>
 
-void quick_sort(void *array, size_t n, size_t el_size, cmp cmp);
+void quick_sort(void *array, size_t n, size_t el_size, cmp_f cmp);
 
 #endif // !__H_QUICK_SORT_

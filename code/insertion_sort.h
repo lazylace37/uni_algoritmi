@@ -3,6 +3,6 @@
 #include "shared.h"
 #include <stddef.h>
 
-void insertion_sort(void *array, size_t n, size_t el_size, cmp cmp);
+void insertion_sort(void *array, size_t n, size_t el_size, cmp_f cmp);
 
 #endif // !__H_INSERTION_SORT__

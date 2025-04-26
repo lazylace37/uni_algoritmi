@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void insertion_sort(void *_array, size_t n, size_t el_size, cmp cmp) {
+void insertion_sort(void *_array, size_t n, size_t el_size, cmp_f cmp) {
   char *arr_ptr = (char *)_array;
 
   char key[el_size]; // You won't convince me this is a bad idea.

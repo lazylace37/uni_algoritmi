@@ -8,6 +8,6 @@ typedef struct {
   void *state;
 } allocator_t;
 
-allocator_t get_default_allocator();
+allocator_t get_default_allocator(void);
 
 #endif // !__H_ALLOCATOR__
