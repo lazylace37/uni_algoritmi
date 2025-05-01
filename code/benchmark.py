@@ -1,4 +1,3 @@
-import multiprocessing
 import subprocess
 from functools import partial
 from multiprocessing import Manager, Pool
@@ -12,14 +11,13 @@ matplotlib.use("pgf")
 matplotlib.rcParams.update(
     {
         "pgf.texsystem": "pdflatex",
-        "font.family": "serif",
         "text.usetex": True,
         "pgf.rcfonts": False,
     }
 )
 
-N_PROC = multiprocessing.cpu_count() // 2
-N_RUNS = 20
+N_PROC = 1  # multiprocessing.cpu_count() // 2
+N_RUNS = 4
 
 BenchmarkRun = Tuple[List[float], List[float]]
 Benchmark = Tuple[int, BenchmarkRun]
@@ -99,29 +97,29 @@ def setup_chart(times: list[tuple[int, tuple[list[float], list[float]]]]):
         heap_sort_stddev,
     ) = setup_chart_data(times)
 
-    plt.figure(figsize=(12, 8))
-    plt.plot(x, quick_sort, marker="s", label="Quick Sort")
+    plt.figure(figsize=(6, 4))
+    plt.plot(x, quick_sort, marker="s", ms=2, label="Quick Sort")
     plt.fill_between(
         x,
         [t - s for t, s in zip(quick_sort, quick_sort_stddev)],
         [t + s for t, s in zip(quick_sort, quick_sort_stddev)],
         alpha=0.2,
     )
-    plt.plot(x, counting_sort, marker="o", label="Counting Sort")
+    plt.plot(x, counting_sort, marker="o", ms=2, label="Counting Sort")
     plt.fill_between(
         x,
         [t - s for t, s in zip(counting_sort, counting_sort_stddev)],
         [t + s for t, s in zip(counting_sort, counting_sort_stddev)],
         alpha=0.2,
     )
-    plt.plot(x, quick_sort_3_way, marker="x", label="Quick Sort 3-Way")
+    plt.plot(x, quick_sort_3_way, marker="x", ms=2, label="Quick Sort 3-Way")
     plt.fill_between(
         x,
         [t - s for t, s in zip(quick_sort_3_way, quick_sort_3_way_stddev)],
         [t + s for t, s in zip(quick_sort_3_way, quick_sort_3_way_stddev)],
         alpha=0.2,
     )
-    plt.plot(x, heap_sort, marker="^", label="Heap Sort")
+    plt.plot(x, heap_sort, marker="^", ms=2, label="Heap Sort")
     plt.fill_between(
         x,
         [t - s for t, s in zip(heap_sort, heap_sort_stddev)],
@@ -132,54 +130,60 @@ def setup_chart(times: list[tuple[int, tuple[list[float], list[float]]]]):
 
 
 def main():
+    ## Grafico in funzione di n
     with Manager() as manager:
-        ## Grafico in funzione di n
         m = 100_000
-        # for m in range(100_000, 1_000_000, 100_000):
-        if True:
-            n = [int(100 * 1.072267222**i) for i in range(0, 100)]
 
-            res_map = manager.dict()
-            with Pool(processes=N_PROC) as pool:
-                pool.map(partial(run_experiment, m=m, res=res_map), n)
-            times = sorted(res_map.items())
+        A = 100
+        B = (20_000_000 / A) ** (1 / 99)
+        n = [int(A * B**i) for i in range(0, 99)]
 
-            plt = setup_chart(times)
-            plt.suptitle("Sorting Algorithm Performance Comparison")
-            plt.title(f"m = {m}")
-            plt.xlabel("Input Size (n)")
-            plt.ylabel("Execution Time (seconds)")
-            plt.legend()
-            plt.grid(True, which="both", linestyle="--")
-            plt.savefig(f"output/benchmark_n_m={m}.pgf")
+        res_map = manager.dict()
+        with Pool(processes=N_PROC) as pool:
+            pool.map(partial(run_experiment, m=m, res=res_map), n)
+        times = sorted(res_map.items())
 
-            plt.xscale("log")
-            plt.yscale("log")
-            plt.savefig(f"output/benchmark_n_m={m}_log.pgf")
+        plt = setup_chart(times)
+        # plt.suptitle("Sorting Algorithm Performance Comparison")
+        # plt.title(f"m = {m}")
+        plt.xlabel("Input Size (n)")
+        plt.ylabel("Execution Time (seconds)")
+        plt.legend()
+        plt.grid(True, which="both", linestyle="--")
+        plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)
+        plt.savefig(f"output/benchmark_n_m={m}.pgf")
 
-        ## Grafico in funzione di m
-        # for n in range(10_000, 100_000, 10_000):
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.savefig(f"output/benchmark_n_m={m}_log.pgf")
+
+    ## Grafico in funzione di m
+    with Manager() as manager:
         n = 10_000
-        if True:
-            m = [int(10 * 1.123324033**i) for i in range(0, 100)]
 
-            res_map_1 = manager.dict()
-            with Pool(processes=N_PROC) as pool:
-                pool.map(partial(run_experiment_l, n=n, res=res_map_1), m)
-            times = sorted(res_map_1.items())
+        A = 10
+        B = (5_000_000 / A) ** (1 / 99)
+        m = [int(A * B**i) for i in range(0, 99)]
+        # m = [int(10 * 1.123324033**i) for i in range(0, 150)]
 
-            plt = setup_chart(times)
-            plt.suptitle("Sorting Algorithm Performance Comparison")
-            plt.title(f"n = {n}")
-            plt.xlabel("Range (m)")
-            plt.ylabel("Execution Time (seconds)")
-            plt.legend()
-            plt.grid(True, which="both", linestyle="--")
-            plt.savefig(f"output/benchmark_m_n={n}.pgf")
+        res_map_1 = manager.dict()
+        with Pool(processes=N_PROC) as pool:
+            pool.map(partial(run_experiment_l, n=n, res=res_map_1), m)
+        times = sorted(res_map_1.items())
 
-            plt.xscale("log")
-            plt.yscale("log")
-            plt.savefig(f"output/benchmark_m_n={n}_log.pgf")
+        plt = setup_chart(times)
+        # plt.suptitle("Sorting Algorithm Performance Comparison")
+        # plt.title(f"n = {n}")
+        plt.xlabel("Range (m)")
+        plt.ylabel("Execution Time (seconds)")
+        plt.legend()
+        plt.grid(True, which="both", linestyle="--")
+        plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)
+        plt.savefig(f"output/benchmark_m_n={n}.pgf")
+
+        plt.xscale("log")
+        plt.yscale("log")
+        plt.savefig(f"output/benchmark_m_n={n}_log.pgf")
 
 
 if __name__ == "__main__":
