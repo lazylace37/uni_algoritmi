@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-size_t partition(void *_array, size_t p, size_t q, size_t el_size, cmp_f cmp) {
+static size_t partition(void *_array, size_t p, size_t q, size_t el_size,
+                        cmp_f cmp) {
   char *arr_ptr = (char *)_array;
 
   size_t i = p;
@@ -26,7 +27,8 @@ size_t partition(void *_array, size_t p, size_t q, size_t el_size, cmp_f cmp) {
   return i;
 }
 
-void _quick_sort(void *array, size_t p, size_t q, size_t el_size, cmp_f cmp) {
+static void _quick_sort(void *array, size_t p, size_t q, size_t el_size,
+                        cmp_f cmp) {
   if (p < q) {
     size_t r = partition(array, p, q, el_size, cmp);
     if (r > 0)
