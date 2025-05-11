@@ -68,6 +68,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  srand(time(NULL));
+
   // Calcola il tempo minimo misurabile
   double clock_res = clock_resolution();
   double max_relative_error = 0.001;
