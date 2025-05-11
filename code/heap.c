@@ -1,5 +1,6 @@
 #include "heap.h"
 #include "shared.h"
+#include "swap.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -43,13 +44,7 @@ void *heap_extract(heap_t *heap) {
   assert(heap->n_items > 0);
 
   char *items = (char *)heap->items;
-
-  // Swap the first element with the last element.
-  char tmp[heap->el_size];
-  memcpy(tmp, items, heap->el_size);
-  memcpy(heap->items, items + (heap->n_items - 1) * heap->el_size,
-         heap->el_size);
-  memcpy(items + (heap->n_items - 1) * heap->el_size, tmp, heap->el_size);
+  swap(items, items + (heap->n_items - 1) * heap->el_size, heap->el_size);
 
   heap->n_items--;
 
@@ -102,12 +97,9 @@ void heap_heapify(heap_t *heap, size_t i) {
     m = r;
   }
 
-  char tmp[heap->el_size];
   if (m != i) {
     // Swap the two elements.
-    memcpy(tmp, items + i * heap->el_size, heap->el_size);
-    memcpy(items + i * heap->el_size, items + m * heap->el_size, heap->el_size);
-    memcpy(items + m * heap->el_size, tmp, heap->el_size);
+    swap(items + i * heap->el_size, items + m * heap->el_size, heap->el_size);
 
     heap_heapify(heap, m);
   }
@@ -127,14 +119,11 @@ int heap_insert(heap_t *heap, void *el) {
 
   // Swap with its parent until greater.
   size_t i = heap->n_items - 1;
-  char tmp[heap->el_size];
   while (i > 0 && heap->cmp(items + i * heap->el_size,
                             items + parent(i) * heap->el_size) > 0) {
     // Swap the two elements.
-    memcpy(tmp, items + i * heap->el_size, heap->el_size);
-    memcpy(items + i * heap->el_size, items + parent(i) * heap->el_size,
-           heap->el_size);
-    memcpy(items + parent(i) * heap->el_size, tmp, heap->el_size);
+    swap(items + i * heap->el_size, items + parent(i) * heap->el_size,
+         heap->el_size);
 
     i = parent(i);
   }

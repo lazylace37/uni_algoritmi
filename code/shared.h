@@ -1,6 +1,7 @@
 #ifndef __H_SHARED__
 #define __H_SHARED__
 #include <stddef.h>
+#include <stdint.h>
 
 typedef int (*cmp_f)(const void *, const void *);
 

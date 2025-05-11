@@ -1,4 +1,5 @@
 #include "quick_sort_3_way.h"
+#include "swap.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -9,22 +10,16 @@ static void partition(void *_array, size_t p, size_t q, size_t *out_l,
   void *x = array + q * el_size;
 
   ssize_t i = p, left = p, right = q;
-  char temp[el_size];
-
   while (i <= right) {
     void *current = array + i * el_size;
     int cmp_result = cmp(current, x);
 
     if (cmp_result < 0) {
-      memcpy(temp, array + i * el_size, el_size);
-      memcpy(array + i * el_size, array + left * el_size, el_size);
-      memcpy(array + left * el_size, temp, el_size);
+      swap(array + i * el_size, array + left * el_size, el_size);
       i++;
       left++;
     } else if (cmp_result > 0) {
-      memcpy(temp, array + i * el_size, el_size);
-      memcpy(array + i * el_size, array + right * el_size, el_size);
-      memcpy(array + right * el_size, temp, el_size);
+      swap(array + i * el_size, array + right * el_size, el_size);
       right--;
     } else {
       i++;

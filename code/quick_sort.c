@@ -1,5 +1,6 @@
 #include "quick_sort.h"
 #include "shared.h"
+#include "swap.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -10,19 +11,14 @@ static size_t partition(void *_array, size_t p, size_t q, size_t el_size,
   size_t i = p;
   void *x = arr_ptr + q * el_size;
 
-  char tmp[el_size];
   for (size_t j = p; j < q; j++) {
     if (cmp(arr_ptr + j * el_size, x) <= 0) {
-      memcpy(tmp, arr_ptr + i * el_size, el_size);
-      memcpy(arr_ptr + i * el_size, arr_ptr + j * el_size, el_size);
-      memcpy(arr_ptr + j * el_size, tmp, el_size);
+      swap(arr_ptr + i * el_size, arr_ptr + j * el_size, el_size);
       i++;
     }
   }
 
-  memcpy(tmp, arr_ptr + i * el_size, el_size);
-  memcpy(arr_ptr + i * el_size, arr_ptr + q * el_size, el_size);
-  memcpy(arr_ptr + q * el_size, tmp, el_size);
+  swap(arr_ptr + i * el_size, arr_ptr + q * el_size, el_size);
 
   return i;
 }
