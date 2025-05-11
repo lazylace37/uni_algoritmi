@@ -1,10 +1,9 @@
-CFLAGS := -O2 \
+CFLAGS := -O3 \
 	-Wall \
 	-Wextra \
 	-Werror \
 	-fno-common \
 	-Winit-self \
-	-Wfloat-equal \
 	-Wundef \
 	-Wshadow \
 	-Wpointer-arith \

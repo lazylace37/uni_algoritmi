@@ -28,8 +28,38 @@ double clock_resolution(void) {
   clock_gettime(CLOCK_MONOTONIC, &start);
   do {
     clock_gettime(CLOCK_MONOTONIC, &end);
-  } while (elapsed_seconds(start, end) <= 1.0e-05f);
+  } while (elapsed_seconds(start, end) == 0);
   return elapsed_seconds(start, end);
+}
+
+double calculate_avg_init_time(int n, double min_time) {
+  allocator_t source_allocator = buffer_allocator_init(n * sizeof(int));
+  int *array = source_allocator.alloc(n * sizeof(int), source_allocator.state);
+
+  allocator_t buffer_allocator = buffer_allocator_init(n * sizeof(int));
+
+  int count = 0;
+  struct timespec start, end;
+  clock_gettime(CLOCK_MONOTONIC, &start);
+  while (1) {
+    int *array_copy =
+        buffer_allocator.alloc(n * sizeof(int), buffer_allocator.state);
+    memcpy(array_copy, array, n * sizeof(int));
+
+    count++;
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    if (elapsed_seconds(start, end) >= min_time)
+      break;
+    buffer_allocator_reset(buffer_allocator);
+  }
+
+  double avg_time = elapsed_seconds(start, end) / count;
+
+  buffer_allocator_fini(buffer_allocator);
+  buffer_allocator_fini(source_allocator);
+
+  return avg_time;
 }
 
 int main(int argc, char *argv[]) {
@@ -46,6 +76,8 @@ int main(int argc, char *argv[]) {
   int n = atoi(argv[1]);
   int m = atoi(argv[2]);
   int n_runs = atoi(argv[3]);
+
+  double avg_init_time = calculate_avg_init_time(n, min_time);
 
   allocator_t std_allocator = get_default_allocator();
   double *quick_sort_times =
@@ -87,7 +119,7 @@ int main(int argc, char *argv[]) {
         buffer_allocator_reset(buffer_allocator);
       }
 
-      quick_sort_times[r] = elapsed_seconds(start, end) / count;
+      quick_sort_times[r] = elapsed_seconds(start, end) / count - avg_init_time;
 
       buffer_allocator_fini(buffer_allocator);
     }
@@ -145,7 +177,8 @@ int main(int argc, char *argv[]) {
         buffer_allocator_reset(buffer_allocator);
       }
 
-      quick_sort_3way_times[r] = elapsed_seconds(start, end) / count;
+      quick_sort_3way_times[r] =
+          elapsed_seconds(start, end) / count - avg_init_time;
 
       buffer_allocator_fini(buffer_allocator);
     }
@@ -173,7 +206,7 @@ int main(int argc, char *argv[]) {
         buffer_allocator_reset(buffer_allocator);
       }
 
-      heap_sort_times[r] = elapsed_seconds(start, end) / count;
+      heap_sort_times[r] = elapsed_seconds(start, end) / count - avg_init_time;
 
       buffer_allocator_fini(buffer_allocator);
     }
@@ -210,7 +243,7 @@ int main(int argc, char *argv[]) {
   heap_sort_std_dev = sqrt(heap_sort_std_dev / n_runs);
 
   // Print risultati
-  printf("QUICK SORT\tCOUNTING SORT\tQUICK SORT 3-WAY\tHEAP SORT\n");
+  printf("quicksort\tcountingsort\tquicksort_3_way\theap_sort\n");
   printf("%.15f\t%.15f\t%.15f\t%.15f\n", quick_sort_avg_time,
          counting_sort_avg_time, quick_sort_3way_avg_time, heap_sort_avg_time);
   printf("%.15f\t%.15f\t%.15f\t%.15f\n", quick_sort_std_dev,
