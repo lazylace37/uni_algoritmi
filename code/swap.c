@@ -51,8 +51,13 @@ static inline void memswap(void *restrict a, void *restrict b, size_t n) {
   unsigned char tmp[SWAP_GENERIC_SIZE];
   while (n > SWAP_GENERIC_SIZE) {
     memcpy(tmp, a, SWAP_GENERIC_SIZE);
-    a = __mempcpy(a, b, SWAP_GENERIC_SIZE);
-    b = __mempcpy(b, tmp, SWAP_GENERIC_SIZE);
+
+    memcpy(a, b, SWAP_GENERIC_SIZE);
+    a = (char *)a + SWAP_GENERIC_SIZE;
+
+    memcpy(b, tmp, SWAP_GENERIC_SIZE);
+    b = (char *)b + SWAP_GENERIC_SIZE;
+
     n -= SWAP_GENERIC_SIZE;
   }
   while (n > 0) {
