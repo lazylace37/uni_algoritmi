@@ -97,7 +97,7 @@ def setup_chart(times: list[tuple[int, tuple[list[float], list[float]]]]):
         heap_sort_stddev,
     ) = setup_chart_data(times)
 
-    plt.figure(figsize=(6, 4))
+    plt.figure(figsize=(8, 4))
     plt.plot(x, quick_sort, marker="s", ms=2, label="Quick Sort")
     plt.fill_between(
         x,
@@ -136,7 +136,7 @@ def main():
 
         A = 100
         B = (20_000_000 / A) ** (1 / 99)
-        n = [int(A * B**i) for i in range(0, 99)]
+        n = [int(A * B**i) for i in range(0, 100)]
 
         res_map = manager.dict()
         with Pool(processes=N_PROC) as pool:
@@ -144,8 +144,6 @@ def main():
         times = sorted(res_map.items())
 
         plt = setup_chart(times)
-        # plt.suptitle("Sorting Algorithm Performance Comparison")
-        # plt.title(f"m = {m}")
         plt.xlabel("Input Size (n)")
         plt.ylabel("Execution Time (seconds)")
         plt.legend()
@@ -162,8 +160,8 @@ def main():
         n = 10_000
 
         A = 10
-        B = (5_000_000 / A) ** (1 / 99)
-        m = [int(A * B**i) for i in range(0, 99)]
+        B = (1_000_000 / A) ** (1 / 99)
+        m = [int(A * B**i) for i in range(0, 100)]
         # m = [int(10 * 1.123324033**i) for i in range(0, 150)]
 
         res_map_1 = manager.dict()
@@ -172,8 +170,6 @@ def main():
         times = sorted(res_map_1.items())
 
         plt = setup_chart(times)
-        # plt.suptitle("Sorting Algorithm Performance Comparison")
-        # plt.title(f"n = {n}")
         plt.xlabel("Range (m)")
         plt.ylabel("Execution Time (seconds)")
         plt.legend()
