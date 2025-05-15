@@ -1,6 +1,5 @@
 #ifndef __H_HEAP_SORT__
 #define __H_HEAP_SORT__
-#include "allocator.h"
 #include "heap.h"
 #include "shared.h"
 #include <stddef.h>
