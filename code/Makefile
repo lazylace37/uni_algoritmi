@@ -1,4 +1,6 @@
 CFLAGS := -O3 \
+	-mcpu=ampere1a \
+	-flto \
 	-Wall \
 	-Wextra \
 	-Werror \
