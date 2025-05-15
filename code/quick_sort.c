@@ -9,7 +9,8 @@ static size_t partition(void *_array, size_t p, size_t q, size_t el_size,
   char *arr_ptr = (char *)_array;
 
   size_t i = p;
-  void *x = arr_ptr + q * el_size;
+  char x[el_size];
+  memcpy(x, arr_ptr + q * el_size, el_size);
 
   for (size_t j = p; j < q; j++) {
     if (cmp(arr_ptr + j * el_size, x) <= 0) {
